@@ -1,5 +1,5 @@
 import { GoogleGenAI } from "@google/genai";
-import { UserInputs, PlatformResult, CalculationMethod } from "../types";
+import { UserInputs, PlatformResult } from "../types";
 import { formatCurrency, formatPercent } from "../utils/currency";
 
 const getClient = () => {
@@ -16,34 +16,28 @@ const getNumber = (value: number | string): number => {
 
 export const generatePricingAnalysis = async (
   inputs: UserInputs,
-  mpMakeupResult: PlatformResult,
-  method: CalculationMethod
+  mpMakeupResult: PlatformResult
 ): Promise<string> => {
   const client = getClient();
   if (!client) {
     return "API Key não configurada. Configure process.env.API_KEY para usar a IA.";
   }
 
-  const methodText = method === CalculationMethod.TARGET_MARGIN 
-    ? "Definição de Preço por Markup Alvo (Sobre Custo)" 
-    : "Análise de Lucro Real";
-  
   const productCost = getNumber(inputs.productCost);
-  const targetMargin = getNumber(inputs.targetMargin);
   const testPrice = getNumber(inputs.testPrice);
 
   const prompt = `
     Atue como um estrategista financeiro de Varejo Físico e E-commerce.
     Analise os dados abaixo para a "Loja Física MP Makeup" e forneça uma resposta com EXCELENTE ESPAÇAMENTO e legibilidade.
     
-    **Dados do Cenário (${methodText}):**
+    **Dados do Cenário (Análise de Lucro Real):**
     - Custo Produto: ${formatCurrency(productCost)}
-    ${method === CalculationMethod.TARGET_MARGIN ? `- Markup Alvo: ${targetMargin}%` : `- Preço Testado: ${formatCurrency(testPrice)}`}
+    - Preço Definido: ${formatCurrency(inputs.mpMakeupForce100Percent ? mpMakeupResult.sellingPrice : testPrice)}
     ${inputs.mpMakeupForce100Percent ? '- **Modo 100% Lucro Ativado**' : ''}
 
     **Resultados Apurados:**
     **Loja Física MP Makeup:** 
-    - Preço Venda: ${formatCurrency(mpMakeupResult.sellingPrice)} 
+    - Preço Venda Final: ${formatCurrency(mpMakeupResult.sellingPrice)} 
     - Lucro Líquido: ${formatCurrency(mpMakeupResult.netProfit)} 
     - Markup Real: ${formatPercent(mpMakeupResult.netProfitMargin)}
 

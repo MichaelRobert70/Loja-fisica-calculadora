@@ -1,18 +1,16 @@
 import React, { useState } from 'react';
-import { UserInputs, PlatformResult, CalculationMethod } from '../types';
+import { UserInputs, PlatformResult } from '../types';
 import { generatePricingAnalysis } from '../services/geminiService';
 import ReactMarkdown from 'react-markdown';
 
 interface AiInsightProps {
   inputs: UserInputs;
   mpMakeupResult: PlatformResult;
-  method: CalculationMethod;
 }
 
 const AiInsight: React.FC<AiInsightProps> = ({ 
   inputs, 
   mpMakeupResult,
-  method 
 }) => {
   const [loading, setLoading] = useState(false);
   const [analysis, setAnalysis] = useState<string | null>(null);
@@ -22,8 +20,7 @@ const AiInsight: React.FC<AiInsightProps> = ({
     setAnalysis(null);
     const result = await generatePricingAnalysis(
       inputs, 
-      mpMakeupResult,
-      method
+      mpMakeupResult
     );
     setAnalysis(result);
     setLoading(false);

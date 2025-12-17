@@ -1,14 +1,12 @@
 import React from 'react';
-import { UserInputs, CalculationMethod } from '../types';
+import { UserInputs } from '../types';
 
 interface CalculatorInputsProps {
   inputs: UserInputs;
   setInputs: React.Dispatch<React.SetStateAction<UserInputs>>;
-  method: CalculationMethod;
-  setMethod: (m: CalculationMethod) => void;
 }
 
-const CalculatorInputs: React.FC<CalculatorInputsProps> = ({ inputs, setInputs, method, setMethod }) => {
+const CalculatorInputs: React.FC<CalculatorInputsProps> = ({ inputs, setInputs }) => {
   
   const handleChange = (field: keyof UserInputs, value: string | boolean) => {
     setInputs(prev => ({ ...prev, [field]: value }));
@@ -21,7 +19,6 @@ const CalculatorInputs: React.FC<CalculatorInputsProps> = ({ inputs, setInputs, 
   const handleClear = () => {
     setInputs({
       productCost: '',
-      targetMargin: '',
       testPrice: '',
       mpMakeupForce100Percent: false,
     });
@@ -32,37 +29,10 @@ const CalculatorInputs: React.FC<CalculatorInputsProps> = ({ inputs, setInputs, 
       {/* Desktop Layout: Single Row */}
       <div className="flex flex-col lg:flex-row lg:items-end gap-3 lg:gap-6">
         
-        {/* Método de Cálculo */}
-        <div className="min-w-[180px] shrink-0">
-           <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-1 block">Método</label>
-           <div className="flex p-0.5 bg-gray-100 rounded-md">
-            <button
-              onClick={() => setMethod(CalculationMethod.TARGET_MARGIN)}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded transition-all px-2 ${
-                method === CalculationMethod.TARGET_MARGIN
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              🎯 Markup
-            </button>
-            <button
-              onClick={() => setMethod(CalculationMethod.REAL_PROFIT)}
-              className={`flex-1 py-1.5 text-xs font-semibold rounded transition-all px-2 ${
-                method === CalculationMethod.REAL_PROFIT
-                  ? 'bg-white text-emerald-600 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
-              }`}
-            >
-              💰 Lucro
-            </button>
-          </div>
-        </div>
-
         {/* Inputs Container */}
         <div className="flex-1 grid grid-cols-2 lg:flex lg:items-end gap-3 lg:gap-4">
             
-            <div className="lg:w-32">
+            <div className="lg:w-40">
                 <label className="block text-[10px] font-bold text-gray-500 mb-1">Custo Produto (R$)</label>
                 <input
                 id="productCost"
@@ -78,41 +48,25 @@ const CalculatorInputs: React.FC<CalculatorInputsProps> = ({ inputs, setInputs, 
                 />
             </div>
 
-            <div className="lg:w-32">
-                {method === CalculationMethod.TARGET_MARGIN ? (
-                    <>
-                        <label className="block text-[10px] font-bold text-indigo-900 mb-1">Markup Alvo (%)</label>
-                        <input
-                        id="targetMargin"
-                        type="number"
-                        inputMode="decimal"
-                        min="0"
-                        max="100"
-                        step="1"
-                        placeholder="Ex: 100"
-                        value={inputs.targetMargin}
-                        onFocus={handleFocus}
-                        onChange={(e) => handleChange('targetMargin', e.target.value)}
-                        className="w-full px-2 py-1.5 text-sm border border-indigo-200 rounded focus:ring-1 focus:ring-indigo-500 outline-none text-indigo-900 font-bold bg-indigo-50"
-                        />
-                    </>
-                ) : (
-                    <>
-                        <label className="block text-[10px] font-bold text-emerald-900 mb-1">Preço Teste (R$)</label>
-                        <input
-                        id="testPrice"
-                        type="number"
-                        inputMode="decimal"
-                        min="0"
-                        step="0.01"
-                        placeholder="0.00"
-                        value={inputs.testPrice}
-                        onFocus={handleFocus}
-                        onChange={(e) => handleChange('testPrice', e.target.value)}
-                        className="w-full px-2 py-1.5 text-sm border border-emerald-200 rounded focus:ring-1 focus:ring-emerald-500 outline-none text-emerald-900 font-bold bg-emerald-50"
-                        />
-                    </>
-                )}
+            <div className="lg:w-40">
+                <label className="block text-[10px] font-bold text-emerald-900 mb-1">Colocar o Preço (R$)</label>
+                <input
+                id="testPrice"
+                type="number"
+                inputMode="decimal"
+                min="0"
+                step="0.01"
+                placeholder="0.00"
+                value={inputs.testPrice}
+                onFocus={handleFocus}
+                onChange={(e) => handleChange('testPrice', e.target.value)}
+                disabled={inputs.mpMakeupForce100Percent}
+                className={`w-full px-2 py-1.5 text-sm border rounded focus:ring-1 focus:ring-emerald-500 outline-none font-bold ${
+                    inputs.mpMakeupForce100Percent 
+                    ? 'bg-gray-100 text-gray-400 border-gray-200' 
+                    : 'bg-emerald-50 text-emerald-900 border-emerald-200'
+                }`}
+                />
             </div>
 
             {/* Checkbox Force 100% - Compact */}
@@ -126,7 +80,7 @@ const CalculatorInputs: React.FC<CalculatorInputsProps> = ({ inputs, setInputs, 
                     />
                     <div className="leading-tight">
                         <span className="block text-xs font-bold text-pink-800">Forçar 100% Lucro</span>
-                        <span className="block text-[9px] text-pink-500">Dobra o investimento</span>
+                        <span className="block text-[9px] text-pink-500">Calcula preço automático</span>
                     </div>
                 </label>
             </div>

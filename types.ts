@@ -1,13 +1,7 @@
 
-export enum CalculationMethod {
-  TARGET_MARGIN = 'TARGET_MARGIN',
-  REAL_PROFIT = 'REAL_PROFIT'
-}
-
 export interface UserInputs {
   productCost: number | string; // CP
-  targetMargin: number | string; // Margem Alvo % (0-100)
-  testPrice: number | string; // Preço Teste
+  testPrice: number | string; // Preço Teste (Preço de Venda)
   mpMakeupForce100Percent?: boolean; // Checkbox para forçar 100% de lucro na MP Makeup
 }
 

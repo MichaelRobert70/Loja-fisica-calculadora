@@ -2,15 +2,14 @@ import React, { useState, useEffect } from 'react';
 import CalculatorInputs from './components/CalculatorInputs';
 import ResultCard from './components/ResultCard';
 import UnitCostCalculator from './components/UnitCostCalculator';
-import { UserInputs, CalculationMethod, CalculationContext } from './types';
+import { UserInputs, CalculationContext } from './types';
 import { calculateResults } from './utils/calculations';
 
 const App: React.FC = () => {
-  const [method, setMethod] = useState<CalculationMethod>(CalculationMethod.TARGET_MARGIN);
+  // Removido estado 'method' pois agora é fixo em Lucro/Preço
   
   const [inputs, setInputs] = useState<UserInputs>({
     productCost: 30.00,
-    targetMargin: 100.0,
     testPrice: 79.90,
     mpMakeupForce100Percent: false,
   });
@@ -18,9 +17,9 @@ const App: React.FC = () => {
   const [results, setResults] = useState<CalculationContext | null>(null);
 
   useEffect(() => {
-    const calculation = calculateResults(inputs, method);
+    const calculation = calculateResults(inputs);
     setResults(calculation);
-  }, [inputs, method]);
+  }, [inputs]);
 
   const handleApplyUnitCost = (cost: number) => {
     setInputs(prev => ({
@@ -54,8 +53,6 @@ const App: React.FC = () => {
                <CalculatorInputs 
                   inputs={inputs} 
                   setInputs={setInputs} 
-                  method={method} 
-                  setMethod={setMethod} 
                />
           </div>
 
